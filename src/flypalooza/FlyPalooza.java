@@ -19,5 +19,6 @@ public class FlyPalooza {
        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        ventana.setSize(600,700);
        ventana.setVisible(true);
+       screen.MakeBites();
     }
 }
