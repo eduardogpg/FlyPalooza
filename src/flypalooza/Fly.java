@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-
+import java.util.ArrayList;
 /**
  *
  * @author Eduardo
@@ -18,22 +18,23 @@ public class Fly extends Thread{
     private Image Fly;
     private int posY=0,posX=90;
     private boolean life= true;
-
-    private final int speed= 20;
-   Random random = new Random();
-    public Fly(int x, int y){
+    
+    private final int speed= 40;
+    Random random = new Random();
+    
+   public Fly(int x, int y){
         this.posX = x;
         this.posY = y;
 
-        this.IconFly = new ImageIcon("Imagenes/fly.png");
+        this.IconFly = new ImageIcon("Imagenes/Mosca.png");
         this.Fly = this.IconFly.getImage();
-        
-    }
+   }
+
     public void run(){
         while(life){
             try {
                 this.Comportamiento();
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
             }
