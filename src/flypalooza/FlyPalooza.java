@@ -14,11 +14,11 @@ public class FlyPalooza {
      */
     public static void main(String[] args) {
        JFrame ventana = new JFrame();
-       Screen screen = new Screen();
+       Screen screen = new Screen(20);
        ventana.add(screen);
        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        ventana.setSize(800,630);
        ventana.setVisible(true);
-       screen.MakeBites(20);
+      
     }
 }

@@ -31,6 +31,9 @@ public class Clock extends Thread{
             minutos++;
         }
     }
+    public void StopClock(){
+        this.Game= false;
+    }
     public int getSecond(){
         return this.segundos;
     }

@@ -17,31 +17,76 @@ public class Fly extends Thread{
     private ImageIcon IconFly;
     private Image Fly;
     private int posY=0,posX=90;
+    private int CposY =0;
     private boolean life= true;
     
-    private final int speed= 40;
+    private int speed= 10;
     Random random = new Random();
+    ArrayList ListRuta;
+    
+    private int posI = 0;
+    private boolean BH = false;
+    private boolean Droped = true;
     
    public Fly(int x, int y){
         this.posX = x;
-        this.posY = y;
-
-        this.IconFly = new ImageIcon("Imagenes/Mosca.png");
-        this.Fly = this.IconFly.getImage();
+        CposY= y;
+        this.posY = (y-800);
+       
+        this.ListRuta = new ArrayList();
+        
+        LoadImage();
    }
+   private void LoadImage(){
+       
+       this.ListRuta.add("Imagenes/Moscas/1.png"); //0
+       this.ListRuta.add("Imagenes/Moscas/2.png");//1
+       this.ListRuta.add("Imagenes/Moscas/3.png");//2
+       this.ListRuta.add("Imagenes/Moscas/4.png");//2
+       this.ListRuta.add("Imagenes/Moscas/5.png");//2
+       this.ListRuta.add("Imagenes/Moscas/6.png");//2
+       
 
+       
+       String Ruta =(String) this.ListRuta.get(3);
+       this.IconFly = new ImageIcon(Ruta);
+       this.Fly = this.IconFly.getImage();
+    
+    }
+   
     public void run(){
         while(life){
             try {
-                this.Comportamiento();
-                Thread.sleep(200);
+                this.behavior();
+                
+                if(this.BH==false){
+                    if(this.posI<5){
+                        this.NextImage();
+                        this.posI++;
+                    }else
+                        this.BH=true;
+                }else{
+                    if(this.posI>0){
+                        this.NextImage();
+                        this.posI--;
+                    }else
+                        this.BH= false;
+                }
+
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    private void Comportamiento(){
-           int coordenada = this.random.nextInt(4)+1;
+    public void stopFly(){
+        this.life= false;
+    }
+    private void behavior(){
+        if(this.Droped){
+            this.Down();
+        }   
+        int coordenada = this.random.nextInt(4)+1;
            
            if(coordenada == 1){
                this.Up();
@@ -52,7 +97,18 @@ public class Fly extends Thread{
            }else if(coordenada == 4){
                 this.Right();
            }
- 
+                      
+           
+    }
+    private void Drop(){
+    
+    
+    }
+    private void NextImage(){
+        
+        String Ruta =(String) this.ListRuta.get(this.posI);
+            IconFly = new ImageIcon(Ruta);
+        this.Fly = this.IconFly.getImage();
     }
     private void Up(){
         if(this.posY>0)
@@ -61,7 +117,9 @@ public class Fly extends Thread{
     private void Down(){
         if(this.posY<700)
             this.posY = this.posY + this.speed;
-    }
+        if(this.posY>CposY)
+            this.Droped=false;
+     }   
     private void Left(){
         if(this.posX>0)
             this.posX = this.posX- this.speed;
@@ -89,5 +147,7 @@ public class Fly extends Thread{
      Width = this.Fly.getWidth(null);
      return new Rectangle(this.posX,this.posY,High,Width);
     }
-    
+    public void SetSpeed(int c){
+        this.speed= c;
+    }
 }

@@ -16,32 +16,40 @@ import javax.swing.ImageIcon;
  * @author Eduardo
  */
 public class Frog extends Thread{
-   private ArrayList ListRuta;
+    
+    private ArrayList ListRuta;
     private Image Frog;
     private ImageIcon LittleFrog;
     private int posY=380,posX=50;
     
    private boolean life= true;
-   private int parpadeo = 3;
+   private int PosImg = 3; //Lo coloco en 3 debido a que en la posicion 3 esta la Imagen inicial
    
-   private int Sleep = 1000;
+   private int Sleep = 2000;
+   public boolean Pleft= false;
    
-   public Frog(boolean game){
+   private boolean OpenM = false;
+   
+   public Frog(boolean game,ArrayList listaA){
        this.ListRuta = new ArrayList();
-       this.LoadImage();
-       
+       this.ListRuta = listaA;
     }
    
     public void run(){
         while(life){
             try {
-                
-                this.behavior();
-                if(this.parpadeo ==4)
-                    this.Sleep= 2000;
-                else
-                    this.Sleep= 300;
-                Thread.sleep(Sleep);
+               this.behavior();
+               Thread.sleep(Sleep);
+               
+               if(this.PosImg == 3){ //Pequeño algoritmo para controlar el parpadeo de la ranita 
+                   this.Sleep= 3000;
+                }else{
+                   if(this.PosImg== 4)
+                        this.Sleep=200;
+                   else
+                       this.Sleep= 100;
+               }
+               
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -55,31 +63,31 @@ public class Frog extends Thread{
     }
         
    private void behavior(){
-       if(this.parpadeo<5){
-           this.NextImage(this.parpadeo);
-           this.parpadeo++;
+
+       if(this.PosImg < 5){ //Algoritmo de parpadeo
+           this.NextImage(this.PosImg);
+           this.PosImg++;
        }else
-           this.parpadeo = 3;
+            this.PosImg= 3;
+      
+          
    }
    
-   
-    private void LoadImage(){
-       
-       this.ListRuta.add("Imagenes/Lateral/3.png");
-       this.ListRuta.add("Imagenes/Lateral/3.png");
-       this.ListRuta.add("Imagenes/Lateral/3.png");
-       
-       this.ListRuta.add("Imagenes/Parpadeo/1.png");
-       this.ListRuta.add("Imagenes/Parpadeo/2.png");
-       
-       String Ruta =(String) this.ListRuta.get(3);
-       LittleFrog = new ImageIcon(Ruta);
-       this.Frog = this.LittleFrog.getImage();
-    
+   public void StopFrog(){
+       this.life= false;
+   }
+
+    public void OpenMouth(){
+      this.PosImg= 5;
+      this.NextImage(this.PosImg);
+    }
+    public void LeftFace(){
+        
+    }
+    public void UpFace(){
+        this.NextImage(5);
     }
     
-   
-
    public Image getimage(){
      return this.Frog;
     }

@@ -32,37 +32,55 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     private Image BackGround;
     private ImageIcon myBackground;
     private boolean GameLife= true;
+    
     private ArrayList List_Fly;
+    private ArrayList ListSpecial;
+    private ArrayList ListPathP1;
+    
     private final Color MyColor=new Color( 14, 60, 180);
-    private int Score=0;
-    private boolean scope= false;
+    private int ScoreO=0;
+    private int deadTime = 0;
+    private int TimeCreateSpecial =0 ;
+    
+    private boolean timeOut= false;
+    private boolean SpecialBoolean = false;
+    
+    String Mensaje = "El Reto a Terminado Siguiente Nivel -->";
     
     Clock clock = new Clock();
     Font font;
     Timer time;
-    Point MyMouse = MouseInfo.getPointerInfo().getLocation();
+    
+    //Point MyMouse = MouseInfo.getPointerInfo().getLocation();
     
     Random random = new Random();
-    Frog Player = new Frog(this.GameLife);
-    Scope MiraPlayerUno = new Scope(0,0);
+    Frog Player ;
+    Scope MiraPlayerUno;
+    Scope MiraPlayerDos = new Scope(0,500);
     
-    public Screen(){
+    public Screen(int cant){
     
-    myBackground = new ImageIcon("Imagenes/Escenario.png");
-    BackGround = myBackground.getImage();
-    this.font = new Font("SansSerif",Font.BOLD,24);   
-    List_Fly = new ArrayList();
-    this.Player.start();
-    this.MiraPlayerUno.start();
-    
-        time = new Timer(4,this); 
-        time.start();
-        this.clock.start();
-        setFocusable(true);
-        addKeyListener(this);
-        addMouseListener(this);
+        myBackground = new ImageIcon("Imagenes/Escenario.png");
+        BackGround = myBackground.getImage();
+        this.font = new Font("SansSerif",Font.BOLD,24);   
+
+        this.List_Fly = new ArrayList();
+        this.ListPathP1 = new ArrayList();
+        this.ListSpecial = new ArrayList();
+
+        //Funciones
+        this.MakeBites(cant);
+        this.MakeFirstPlayer();
         
+            time = new Timer(4,this); 
+            time.start();
+            this.clock.start();
+            setFocusable(true);
+            addKeyListener(this);
+            addMouseListener(this);
+
     }        
+    
     public void MakeBites(int horda){
         
         for(int x=0; x<horda;x++){
@@ -72,9 +90,30 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
             moscas.start();
             this.List_Fly.add(moscas);
         }
+        deadTime= 60;
+        this.TimeCreateSpecial = this.random.nextInt(10)+1;
+        System.err.println(this.TimeCreateSpecial);
+    }
+    
+    private void MakeFirstPlayer(){
+        
+       this.ListPathP1.add("Imagenes/Lateral/1.png"); //0
+       this.ListPathP1.add("Imagenes/Lateral/2.png");//1
+       this.ListPathP1.add("Imagenes/Lateral/3.png");//2
+       this.ListPathP1.add("Imagenes/Parpadeo/1.png"); //3
+       this.ListPathP1.add("Imagenes/Parpadeo/2.png");//4
+       this.ListPathP1.add("Imagenes/Centro/3.png");//5
+       
+        
+        this.Player = new Frog(this.GameLife, this.ListPathP1);
+        this.Player.start();
+        this.MiraPlayerUno = new Scope(0,0);
+        this.MiraPlayerUno.start();
+        
         
     }
-     public void paint(Graphics g){
+    
+    public void paint(Graphics g){
      
      super.paint(g);
      Graphics2D g2 = (Graphics2D)g; //Pasamos G a Graphics 2D
@@ -87,28 +126,95 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
      g2.drawImage(this.Player.getimage(), this.Player.getX(),this.Player.getY() ,null);//Dibujamos al Jugador 
      
      g2.drawImage(this.MiraPlayerUno.getimage(),this.MiraPlayerUno.getX(), MiraPlayerUno.getY(),null);
+     g2.drawImage(this.MiraPlayerDos.getimage(),this.MiraPlayerDos.getX(), MiraPlayerDos.getY(),null);
      
-     g2.drawString("Score : "+this.List_Fly.size(),160,40);
-     g2.drawString("Timer : "+this.clock.getSecond(),300,40);  
-      
+     if(this.timeOut)
+           g2.drawString(Mensaje,250,180); 
+     else{
+            g2.drawString("Score Player One : "+this.ScoreO,80,40);
+            g2.drawString("Score Player Two : "+this.ScoreO,400,40);
+
+            g2.drawString("Timer : "+this.clock.getSecond(),300,80);  
+     }
+     
      if(this.List_Fly.size()>0)
          for(int x=0;x<this.List_Fly.size();x++){
              Fly LittleMosca = (Fly)this.List_Fly.get(x);
              g2.drawImage(LittleMosca.getimage(),LittleMosca.getX(), LittleMosca.getY(),null);
          }
-
-     }  
      
-    
-     public void actionPerformed(ActionEvent e) {
+        if( this.ListSpecial.size()>0){
+            
+            Special Att =(Special) this.ListSpecial.get(0);
+            g2.drawImage(Att.getimage(),Att.getX(), Att.getY(),null);
+            
+            if(Att.getY()>300){
+              this.ListSpecial.remove(0);
+              System.out.println("Eliminado de a lista");
+              Att.stop();
+            }
+             
+        }
+     }
+  
+    public void actionPerformed(ActionEvent e) {
         repaint();
-
+        this.Sinapsis();
+        this.CheckSpecial();
+        
     }
-
-
+   
+    private void CheckSpecial(){
+         if(this.TimeCreateSpecial== this.clock.getSecond())
+              this.SpecialBoolean= true;
+         
+         if(this.SpecialBoolean){
+                
+             Special Attac = new Special();
+             Attac.start();
+             this.ListSpecial.add(Attac);
+             SpecialBoolean= false;
+             TimeCreateSpecial= 0;
+         }
+         //No se si colocar aqui que se borre de la lista o en el metodo paint
+      }
+    
+    private void Sinapsis(){
+        
+        LocatioFace();
+        TimeOut();        
+                 
+     }
+    
+    private void LocatioFace(){
+            if(this.MiraPlayerUno.getX()>400)
+               this.Player.LeftFace();
+            else
+                this.Player.Pleft= false;
+     
+     }
+    
+    private void TimeOut(){
+       if(this.clock.getSecond()> this.deadTime){
+           this.clock.StopClock();
+           this.Player.StopFrog();
+           this.MiraPlayerUno.StopM();
+           for(int x=0;x<this.List_Fly.size();x++){
+               Fly LittleFly = (Fly) this.List_Fly.get(x);
+               LittleFly.stopFly();
+           }
+          timeOut= true;         
+        }
+       
+    }
+    
     public void keyTyped(KeyEvent e) { 
     }
-
+    
+    public void keyReleased(KeyEvent e) {
+        
+    }
+    
     public void keyPressed(KeyEvent e) {
     int Key = e.getKeyCode();
     
@@ -120,47 +226,76 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
               this.MiraPlayerUno.Up();
           }else if(Key==KeyEvent.VK_DOWN){
               this.MiraPlayerUno.Down();
+          
+          }else if(Key==KeyEvent.VK_D) {
+              this.MiraPlayerDos.Right();
+          }else if(Key==KeyEvent.VK_A) {
+              this.MiraPlayerDos.Left();
+          }else if(Key==KeyEvent.VK_W){
+              this.MiraPlayerDos.Up();
+          }else if(Key==KeyEvent.VK_S){
+              this.MiraPlayerDos.Down();
+              
           }else if(Key==KeyEvent.VK_SPACE){
              this.CollisionDetector();
+             this.Player.OpenMouth();
           }
     }
 
-    public void keyReleased(KeyEvent e) {
-        
-    }
-    
     private void CollisionDetector(){
+        Rectangle M = this.MiraPlayerUno.Rectangulo();
+        // Rectangle M = this.MiraPlayerDos.Rectangulo();
         
         for(int x=0;x<this.List_Fly.size();x++){
              Fly littles_fly = (Fly)List_Fly.get(x); 
              Rectangle RectFly = littles_fly.Rectangulo();
-             Rectangle M = this.MiraPlayerUno.Rectangulo();
-              
              if(RectFly.intersects(M)){
                  this.List_Fly.remove(x);
-                 
+                 ScoreO++;
              }
         }
+        if(this.ListSpecial.size()>0){
+            Special Atta = (Special)this.ListSpecial.get(0);
+            Rectangle RectSpe = Atta.Rectangulo();
+            
+         if(RectSpe.intersects(M)){
+             this.TiggeredSpecial(Atta.GetSpecial());
+              this.ListSpecial.remove(0);
+              
+            }
+        }
     }
-
-
+    private void TiggeredSpecial(int num){
+        if(num == 0){
+           this.MakeBites(20);
+       }else if(num==1){
+           this.MakeBites(20);
+        }else if(num==2){
+           this.MakeBites(20);
+        }else if(num==3){
+           this.MakeBites(20);
+        }else if(num==4){
+            this.ChangeSpeedbites();
+        }
+    }
+    private void ChangeSpeedbites(){
+        for(int x=0;x<this.List_Fly.size();x++){
+             Fly LittleMosca = (Fly)this.List_Fly.get(x);
+             LittleMosca.SetSpeed(10);
+            }
+    }
     public void mouseClicked(MouseEvent e) {//Se llama cuando se oprime y se suelta un botón en el mouse.
-
     }
-
-
+    
     public void mousePressed(MouseEvent e) { //Cuando se oprime el boton del mouse.
- 
     }
-
+    
     public void mouseReleased(MouseEvent e) {//Cuando se suelta el boton del mouse
     }
-
-
+    
     public void mouseEntered(MouseEvent e) { // Ocurre cuando el cursor entra dentro de los límites del componente.
     }
-
-
+    
     public void mouseExited(MouseEvent e) {
     }
 }

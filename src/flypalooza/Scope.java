@@ -26,6 +26,7 @@ public class Scope extends Thread{
     
     private  int velx=10,vely=10;
     private boolean life= true;
+    private boolean Move = true;
     
     public Scope(int x, int y){
         posX = x;
@@ -37,12 +38,16 @@ public class Scope extends Thread{
     public void run(){
             while(life){
             try {
-                this.behavior();
+                if(this.Move)
+                    this.behavior();
                 Thread.sleep(30);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    public void StopM(){
+        this.life= false;
     }
     public Image getimage(){
      return this.Scope;
@@ -85,7 +90,9 @@ public class Scope extends Thread{
     public int getY(){
         return this.posY;
     }
-    
+    public void setMove(){
+        this.Move = true;
+    }
     public Rectangle Rectangulo(){
      int High;
      int Width;
