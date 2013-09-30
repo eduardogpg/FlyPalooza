@@ -31,9 +31,16 @@ public class Scope extends Thread{
     public Scope(int x, int y){
         posX = x;
         posY = y;
-        this.LittleScope = new ImageIcon("Imagenes/Scope.png");
+       
+        this.LoadImg();
+    }
+    private void LoadImg(){
+        this.ListRuta.add("Imagenes/Miras/mira1.png");
+        this.ListRuta.add("Imagenes/Miras/mira2.png");
+        
+        
+        this.LittleScope = new ImageIcon("Imagenes/Miras/mira1.png");
         this.Scope = this.LittleScope.getImage();
-    
     }
     public void run(){
             while(life){

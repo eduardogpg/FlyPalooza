@@ -47,7 +47,7 @@ public class Frog extends Thread{
                    if(this.PosImg== 4)
                         this.Sleep=200;
                    else
-                       this.Sleep= 100;
+                       this.Sleep= 50;
                }
                
             } catch (InterruptedException ex) {
@@ -78,7 +78,8 @@ public class Frog extends Thread{
    }
 
     public void OpenMouth(){
-      this.PosImg= 5;
+     this.Sleep= 50; 
+     this.PosImg= 5;
       this.NextImage(this.PosImg);
     }
     public void LeftFace(){

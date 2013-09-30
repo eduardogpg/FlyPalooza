@@ -226,7 +226,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
             this.clock.Restart();
              this.Level++;
              MiraPlayerUno.start();
-             MiraPlayerDos.start();
+             //MiraPlayerDos.start();
         }
         
         if((TimeOut())&&(this.Level<3)){
