@@ -23,6 +23,10 @@ public class Clock extends Thread{
 
         }
     }
+    public void Restart(){
+        this.segundos=0;
+    
+    }
     private void SetTime(){
         if(segundos< 60){
             segundos++;

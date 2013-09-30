@@ -14,7 +14,7 @@ public class FlyPalooza {
      */
     public static void main(String[] args) {
        JFrame ventana = new JFrame();
-       Screen screen = new Screen(20);
+       Screen screen = new Screen();
        ventana.add(screen);
        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        ventana.setSize(800,630);

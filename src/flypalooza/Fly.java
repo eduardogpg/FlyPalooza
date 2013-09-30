@@ -20,13 +20,14 @@ public class Fly extends Thread{
     private int CposY =0;
     private boolean life= true;
     
-    private int speed= 10;
+    private int speed= 40;
     Random random = new Random();
     ArrayList ListRuta;
     
     private int posI = 0;
     private boolean BH = false;
     private boolean Droped = true;
+    private boolean boss= false;
     
    public Fly(int x, int y){
         this.posX = x;
@@ -100,9 +101,8 @@ public class Fly extends Thread{
                       
            
     }
-    private void Drop(){
-    
-    
+    public boolean getBoos(){
+        return this.boss;
     }
     private void NextImage(){
         
@@ -115,7 +115,7 @@ public class Fly extends Thread{
             this.posY = this.posY- this.speed;
     }
     private void Down(){
-        if(this.posY<700)
+        if(this.posY<500)
             this.posY = this.posY + this.speed;
         if(this.posY>CposY)
             this.Droped=false;

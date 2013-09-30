@@ -31,17 +31,16 @@ public class Special extends Thread{
         
     }
     private void LoadImg(){
-        this.ListRuta.add("Imagenes/Special.png");//0
-        this.ListRuta.add("Imagenes/Special.png");//1
-        this.ListRuta.add("Imagenes/Special.png");//2
-        this.ListRuta.add("Imagenes/Special.png");//3
+        this.ListRuta.add("Imagenes/Poderes/1.png");//0
+        this.ListRuta.add("Imagenes/Poderes/2.png");//0
+        this.ListRuta.add("Imagenes/Poderes/3.png");//0
+        this.ListRuta.add("Imagenes/Poderes/4.png");//0
         
     }
     private void LoadSpecial(){
         this.posX= this.random.nextInt(600)+1;
         
         SpecialNumber = this.random.nextInt(3);
-        System.out.println(SpecialNumber);
         String path = (String)this.ListRuta.get(SpecialNumber);
         this.IconSpecial = new ImageIcon(path);
         this.ImgSpecial = this.IconSpecial.getImage();

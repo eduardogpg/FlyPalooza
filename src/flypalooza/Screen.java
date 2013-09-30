@@ -31,21 +31,28 @@ import javax.swing.Timer;
 public class Screen extends JPanel implements ActionListener,KeyListener,MouseListener{
     private Image BackGround;
     private ImageIcon myBackground;
-    private boolean GameLife= true;
+    
+    private Image Grass;
+    private ImageIcon IconGrass;
     
     private ArrayList List_Fly;
     private ArrayList ListSpecial;
     private ArrayList ListPathP1;
+    private ArrayList listClouds;
     
     private final Color MyColor=new Color( 14, 60, 180);
     private int ScoreO=0;
-    private int deadTime = 0;
+    private int deadTime = 30;
     private int TimeCreateSpecial =0 ;
+    private int Horda = 10;
+    private int Level = 0;
+    private int AuxTimer = 0;
     
     private boolean timeOut= false;
     private boolean SpecialBoolean = false;
+    private boolean SpeedFlys = false;
     
-    String Mensaje = "El Reto a Terminado Siguiente Nivel -->";
+    String Mesage = "You Ready fot Cath "+this.Horda+ " in 30 seconds ";
     
     Clock clock = new Clock();
     Font font;
@@ -58,19 +65,24 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     Scope MiraPlayerUno;
     Scope MiraPlayerDos = new Scope(0,500);
     
-    public Screen(int cant){
+    public Screen(){
     
         myBackground = new ImageIcon("Imagenes/Escenario.png");
         BackGround = myBackground.getImage();
         this.font = new Font("SansSerif",Font.BOLD,24);   
 
+        this.IconGrass = new ImageIcon("Imagenes/pasto.png");
+        this.Grass = this.IconGrass.getImage();
+        
         this.List_Fly = new ArrayList();
         this.ListPathP1 = new ArrayList();
         this.ListSpecial = new ArrayList();
-
+        this.listClouds= new ArrayList();
+        
         //Funciones
-        this.MakeBites(cant);
+        this.MakeBites(this.Horda);
         this.MakeFirstPlayer();
+        this.MakeCloud();
         
             time = new Timer(4,this); 
             time.start();
@@ -86,13 +98,24 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
         for(int x=0; x<horda;x++){
             int Cx = this.random.nextInt(700)+1;
             int Cy = this.random.nextInt(400)+1;
-            Fly moscas = new Fly(Cx,Cy);
-            moscas.start();
-            this.List_Fly.add(moscas);
+                Fly moscas = new Fly(Cx,Cy);
+                moscas.start();
+                this.List_Fly.add(moscas);
         }
-        deadTime= 60;
-        this.TimeCreateSpecial = this.random.nextInt(10)+1;
-        System.err.println(this.TimeCreateSpecial);
+        this.TimeCreateSpecial = this.random.nextInt(10)+1; //Me ayuda a crear un Item Especial
+ 
+    }
+    
+    private void MakeCloud(){
+        for(int x=0;x<4;x++){
+            int w = this.random.nextInt(600);
+            int y= this.random.nextInt(100);
+            Cloud mycloud = new Cloud(w, y);
+            
+            listClouds.add(mycloud);
+            mycloud.start();
+        }
+    
     }
     
     private void MakeFirstPlayer(){
@@ -104,12 +127,10 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
        this.ListPathP1.add("Imagenes/Parpadeo/2.png");//4
        this.ListPathP1.add("Imagenes/Centro/3.png");//5
        
-        
-        this.Player = new Frog(this.GameLife, this.ListPathP1);
+        //Dibujo la raba y creo la mira
+        this.Player = new Frog(true, this.ListPathP1);
         this.Player.start();
-        this.MiraPlayerUno = new Scope(0,0);
-        this.MiraPlayerUno.start();
-        
+        this.MiraPlayerUno = new Scope(300,300);
         
     }
     
@@ -117,20 +138,38 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
      
      super.paint(g);
      Graphics2D g2 = (Graphics2D)g; //Pasamos G a Graphics 2D
-     g.drawImage(this.BackGround,0,0, this);
-     
+    g.drawImage(this.BackGround,0,0, this);
+      
      
      g2.setFont(font);
      g2.setColor(this.MyColor);
+     
+     g2.drawImage(this.Grass,0,200, null);
      
      g2.drawImage(this.Player.getimage(), this.Player.getX(),this.Player.getY() ,null);//Dibujamos al Jugador 
      
      g2.drawImage(this.MiraPlayerUno.getimage(),this.MiraPlayerUno.getX(), MiraPlayerUno.getY(),null);
      g2.drawImage(this.MiraPlayerDos.getimage(),this.MiraPlayerDos.getX(), MiraPlayerDos.getY(),null);
      
+     for(int x=0;x<this.listClouds.size();x++){
+               Cloud myCloud =(Cloud) this.listClouds.get(x);
+               g2.drawImage(myCloud.getimage(),myCloud.getX(), myCloud.getY(),null);
+     }
+             
+        if((this.Level==0)&&(this.clock.getSecond()<4)){
+            g2.drawString(this.Mesage +this.clock.getSecond(),300,80);  
+
+        }else{
+               if((this.clock.getSecond()==4)&&(this.Level==0))
+                    g2.drawString("GOOOOOO",300,80);
+
+        }
+
+        
+        
      if(this.timeOut)
-           g2.drawString(Mensaje,250,180); 
-     else{
+           g2.drawString(this.Mesage,250,180); 
+     else if(this.Level!=0){
             g2.drawString("Score Player One : "+this.ScoreO,80,40);
             g2.drawString("Score Player Two : "+this.ScoreO,400,40);
 
@@ -150,11 +189,11 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
             
             if(Att.getY()>300){
               this.ListSpecial.remove(0);
-              System.out.println("Eliminado de a lista");
               Att.stop();
             }
              
         }
+        
      }
   
     public void actionPerformed(ActionEvent e) {
@@ -164,26 +203,44 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
         
     }
    
+    int coZ = 0;
     private void CheckSpecial(){
-         if(this.TimeCreateSpecial== this.clock.getSecond())
+         if(this.TimeCreateSpecial== this.clock.getSecond()){
               this.SpecialBoolean= true;
-         
-         if(this.SpecialBoolean){
+              this.coZ++;
+         }
+         if((this.SpecialBoolean)&& (this.coZ==1)){
                 
              Special Attac = new Special();
              Attac.start();
+             System.err.println("Entro");/////////////////////////////////////////////////////////
              this.ListSpecial.add(Attac);
              SpecialBoolean= false;
              TimeCreateSpecial= 0;
          }
-         //No se si colocar aqui que se borre de la lista o en el metodo paint
+      
       }
     
     private void Sinapsis(){
+        if((this.Level==0)&&(this.clock.getSecond()==5)){
+            this.clock.Restart();
+             this.Level++;
+             MiraPlayerUno.start();
+             MiraPlayerDos.start();
+        }
         
-        LocatioFace();
-        TimeOut();        
-                 
+        if((TimeOut())&&(this.Level<3)){
+            this.Level++;
+            this.Mesage ="Preparate para la luciernagas ";
+        }
+       if(SpeedFlys)
+           if(this.AuxTimer== this.clock.getSecond()){
+               for(int x=0;x<this.List_Fly.size();x++){
+                    Fly littles_fly = (Fly)List_Fly.get(x); 
+                    littles_fly.SetSpeed(40);
+               }
+           }
+                        
      }
     
     private void LocatioFace(){
@@ -194,18 +251,34 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
      
      }
     
-    private void TimeOut(){
-       if(this.clock.getSecond()> this.deadTime){
-           this.clock.StopClock();
-           this.Player.StopFrog();
-           this.MiraPlayerUno.StopM();
-           for(int x=0;x<this.List_Fly.size();x++){
-               Fly LittleFly = (Fly) this.List_Fly.get(x);
-               LittleFly.stopFly();
-           }
-          timeOut= true;         
-        }
+    private boolean TimeOut(){
+        if(this.clock.getSecond()> this.deadTime){
+            if(this.ScoreO>this.Horda)
+                this.Mesage ="You Win :3";  
+            else
+                 this.Mesage = "You are loser :/ " ;
+            
+            this.StopAll();
+           timeOut= true; 
+           return true;
+       }else if((this.List_Fly.size()==0)){
+           this.Mesage ="You Win LOL :3";  
+           timeOut= true;
+           this.StopAll();
+           return true;
+       }else
+           return false;
        
+    }
+    
+    private void StopAll(){
+        this.clock.StopClock();
+        this.Player.StopFrog();
+        this.MiraPlayerUno.StopM();
+        for(int x=0;x<this.List_Fly.size();x++){
+           Fly LittleFly = (Fly) this.List_Fly.get(x);
+           LittleFly.stopFly();
+        }
     }
     
     public void keyTyped(KeyEvent e) { 
@@ -258,32 +331,37 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
             Special Atta = (Special)this.ListSpecial.get(0);
             Rectangle RectSpe = Atta.Rectangulo();
             
-         if(RectSpe.intersects(M)){
-             this.TiggeredSpecial(Atta.GetSpecial());
-              this.ListSpecial.remove(0);
-              
-            }
+            if(RectSpe.intersects(M)){
+                this.TiggeredSpecial(Atta.GetSpecial());
+                this.ListSpecial.remove(0);
+                 System.err.println(this.ListSpecial.size());
+               } 
         }
     }
+    
     private void TiggeredSpecial(int num){
         if(num == 0){
-           this.MakeBites(20);
+           this.MakeBites(this.List_Fly.size()*2);
        }else if(num==1){
-           this.MakeBites(20);
-        }else if(num==2){
-           this.MakeBites(20);
+           this.ChangeSpeedbites();
+        }else if(num==2){ 
+           System.err.println("Mira má grande");
         }else if(num==3){
-           this.MakeBites(20);
+           this.ChangeSpeedbites();
         }else if(num==4){
             this.ChangeSpeedbites();
         }
     }
+    
     private void ChangeSpeedbites(){
         for(int x=0;x<this.List_Fly.size();x++){
              Fly LittleMosca = (Fly)this.List_Fly.get(x);
              LittleMosca.SetSpeed(10);
             }
+        this.SpeedFlys= true;
+        AuxTimer = this.clock.getSecond()+3;
     }
+    
     public void mouseClicked(MouseEvent e) {//Se llama cuando se oprime y se suelta un botón en el mouse.
     }
     
