@@ -76,4 +76,7 @@ public class Cloud extends Thread{
     public Image getimage(){
      return this.Cloud;
     }
+    public void setBHFalse(){
+        this.BH= false;
+    }
 }

@@ -21,18 +21,21 @@ public class Frog extends Thread{
     private Image Frog;
     private ImageIcon LittleFrog;
     private int posY=380,posX=50;
+    public int  ScoreFrog=0;
     
    private boolean life= true;
-   private int PosImg = 3; //Lo coloco en 3 debido a que en la posicion 3 esta la Imagen inicial
+   private int PosImg = 0; //Lo coloco en 3 debido a que en la posicion 3 esta la Imagen inicial
    
    private int Sleep = 2000;
    public boolean Pleft= false;
    
    private boolean OpenM = false;
    
-   public Frog(boolean game,ArrayList listaA){
+   public Frog(boolean game,ArrayList listaA,int x, int y){
        this.ListRuta = new ArrayList();
        this.ListRuta = listaA;
+       this.posX=x;
+       this.posY = y;
     }
    
     public void run(){
@@ -41,10 +44,10 @@ public class Frog extends Thread{
                this.behavior();
                Thread.sleep(Sleep);
                
-               if(this.PosImg == 3){ //Pequeño algoritmo para controlar el parpadeo de la ranita 
+               if(this.PosImg == 0){ //Pequeño algoritmo para controlar el parpadeo de la ranita 
                    this.Sleep= 3000;
                 }else{
-                   if(this.PosImg== 4)
+                   if(this.PosImg== 1)
                         this.Sleep=200;
                    else
                        this.Sleep= 50;
@@ -64,11 +67,11 @@ public class Frog extends Thread{
         
    private void behavior(){
 
-       if(this.PosImg < 5){ //Algoritmo de parpadeo
+       if(this.PosImg < 2){ //Algoritmo de parpadeo
            this.NextImage(this.PosImg);
            this.PosImg++;
        }else
-            this.PosImg= 3;
+            this.PosImg= 0;
       
           
    }
@@ -79,7 +82,7 @@ public class Frog extends Thread{
 
     public void OpenMouth(){
      this.Sleep= 50; 
-     this.PosImg= 5;
+     this.PosImg= 2;
       this.NextImage(this.PosImg);
     }
     public void LeftFace(){

@@ -28,7 +28,7 @@ public class Clock extends Thread{
     
     }
     private void SetTime(){
-        if(segundos< 60){
+        if(segundos< 300){
             segundos++;
         }else{
             segundos=0;

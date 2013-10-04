@@ -29,27 +29,21 @@ public class Fly extends Thread{
     private boolean Droped = true;
     private boolean boss= false;
     
-   public Fly(int x, int y){
+    private int FinalSize=0;
+   public Fly(int x, int y, ArrayList listaImg){
         this.posX = x;
         CposY= y;
         this.posY = (y-800);
        
         this.ListRuta = new ArrayList();
+        ListRuta = listaImg;
         
+        FinalSize = this.ListRuta.size()-1;
         LoadImage();
    }
-   private void LoadImage(){
+   private void LoadImage(){//Este metodo se puede Omitir :3
        
-       this.ListRuta.add("Imagenes/Moscas/1.png"); //0
-       this.ListRuta.add("Imagenes/Moscas/2.png");//1
-       this.ListRuta.add("Imagenes/Moscas/3.png");//2
-       this.ListRuta.add("Imagenes/Moscas/4.png");//2
-       this.ListRuta.add("Imagenes/Moscas/5.png");//2
-       this.ListRuta.add("Imagenes/Moscas/6.png");//2
-       
-
-       
-       String Ruta =(String) this.ListRuta.get(3);
+       String Ruta =(String) this.ListRuta.get(0);
        this.IconFly = new ImageIcon(Ruta);
        this.Fly = this.IconFly.getImage();
     
@@ -59,21 +53,21 @@ public class Fly extends Thread{
         while(life){
             try {
                 this.behavior();
-                
-                if(this.BH==false){
-                    if(this.posI<5){
-                        this.NextImage();
-                        this.posI++;
-                    }else
-                        this.BH=true;
-                }else{
-                    if(this.posI>0){
-                        this.NextImage();
-                        this.posI--;
-                    }else
-                        this.BH= false;
-                }
-
+           
+                        if(this.BH==false){
+                            if(this.posI<FinalSize){
+                                this.NextImage();
+                                this.posI++;
+                            }else
+                                this.BH=true;
+                        }else{
+                            if(this.posI>0){
+                                this.NextImage();
+                                this.posI--;
+                            }else
+                                this.BH= false;
+                        }
+                      
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,13 +95,14 @@ public class Fly extends Thread{
                       
            
     }
+    
     public boolean getBoos(){
         return this.boss;
     }
     private void NextImage(){
         
         String Ruta =(String) this.ListRuta.get(this.posI);
-            IconFly = new ImageIcon(Ruta);
+        IconFly = new ImageIcon(Ruta);
         this.Fly = this.IconFly.getImage();
     }
     private void Up(){
@@ -150,4 +145,8 @@ public class Fly extends Thread{
     public void SetSpeed(int c){
         this.speed= c;
     }
+    private int M=5;
+    private int m= 0;
+    
+
 }

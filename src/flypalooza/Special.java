@@ -32,15 +32,17 @@ public class Special extends Thread{
     }
     private void LoadImg(){
         this.ListRuta.add("Imagenes/Poderes/1.png");//0
-        this.ListRuta.add("Imagenes/Poderes/2.png");//0
-        this.ListRuta.add("Imagenes/Poderes/3.png");//0
-        this.ListRuta.add("Imagenes/Poderes/4.png");//0
+        this.ListRuta.add("Imagenes/Poderes/2.png");//1
+        this.ListRuta.add("Imagenes/Poderes/3.png");//2
+        this.ListRuta.add("Imagenes/Poderes/4.png");//3
+        
+
         
     }
     private void LoadSpecial(){
         this.posX= this.random.nextInt(600)+1;
         
-        SpecialNumber = this.random.nextInt(3);
+        SpecialNumber = this.random.nextInt(4);
         String path = (String)this.ListRuta.get(SpecialNumber);
         this.IconSpecial = new ImageIcon(path);
         this.ImgSpecial = this.IconSpecial.getImage();
@@ -50,7 +52,7 @@ public class Special extends Thread{
         while(this.hidde){
             try {
                 this.Drop();
-                Thread.sleep(1000);
+                Thread.sleep(50);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
             }

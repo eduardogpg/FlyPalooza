@@ -22,32 +22,43 @@ public class Scope extends Thread{
     private ImageIcon LittleScope;
     private int posY=0,posX=90;
     
-    private final int speed = 20;
+    private int speed = 20;
     
-    private  int velx=10,vely=10;
+    private  int velx=5,vely=5;
     private boolean life= true;
     private boolean Move = true;
+    private  int posI=0;
     
-    public Scope(int x, int y){
+    public int numberMi= 0;
+    
+    public Scope(int x, int y,int number){
         posX = x;
         posY = y;
-       
+        numberMi = number;
+        
+       this.ListRuta = new ArrayList();
         this.LoadImg();
     }
     private void LoadImg(){
-        this.ListRuta.add("Imagenes/Miras/mira1.png");
+        this.ListRuta.add("Imagenes/Miras/mira.png");
         this.ListRuta.add("Imagenes/Miras/mira2.png");
+        this.ListRuta.add("Imagenes/Miras/miragrande.png");
         
-        
-        this.LittleScope = new ImageIcon("Imagenes/Miras/mira1.png");
+        this.LittleScope = new ImageIcon("Imagenes/Miras/mira.png");
         this.Scope = this.LittleScope.getImage();
+        
+    }
+    public void ChangeforBigImg(int x){
+      String Ruta =(String) this.ListRuta.get(x);
+            LittleScope = new ImageIcon(Ruta);
+            this.Scope = this.LittleScope.getImage();
     }
     public void run(){
             while(life){
             try {
                 if(this.Move)
                     this.behavior();
-                Thread.sleep(30);
+                Thread.sleep(50);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -68,11 +79,29 @@ public class Scope extends Thread{
         this.posY= 25;
     else if(this.posY>=500)
         this.posY = 495;
-        
+
+    
+    
         posX+=velx;
         posY+=vely;
+    
     }
-     
+    public void getSpeed(int x){
+        this.speed=x;
+    
+    }
+    
+    private void nextImg(){
+        if(this.posI<this.ListRuta.size()){
+        
+            String Ruta =(String) this.ListRuta.get(this.posI);
+
+            LittleScope = new ImageIcon(Ruta);
+            this.Scope = this.LittleScope.getImage();
+            this.posI++;
+        }else
+            this.posI=0;
+    }
     public void Up(){
         vely=-speed;
         velx=0;
