@@ -52,7 +52,7 @@ public class Special extends Thread{
         while(this.hidde){
             try {
                 this.Drop();
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Fly.class.getName()).log(Level.SEVERE, null, ex);
             }

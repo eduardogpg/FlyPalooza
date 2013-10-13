@@ -55,6 +55,7 @@ public class Scope extends Thread{
     }
     public void run(){
             while(life){
+                
             try {
                 if(this.Move)
                     this.behavior();
@@ -71,6 +72,7 @@ public class Scope extends Thread{
      return this.Scope;
     }
     public void behavior(){
+       
     if(this.posX<=20)
         posX=25;
     else if(this.posX>=700)

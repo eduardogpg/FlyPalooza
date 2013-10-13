@@ -27,11 +27,9 @@ public class Boss extends Thread{
     private boolean Fight= true;
            
     public int ScorepLiefe= 100;
-    
-    private int speed= 40;
+    private final int speed= 40;
     Random random = new Random();
     ArrayList ListPath;
-    
     private int posIz= 0;
     private int posDr =1;
    
@@ -82,17 +80,15 @@ public class Boss extends Thread{
     public void stopFly(){
         this.life= false;
     }
+    
     private void behavior(){
         if(this.Droped)
             this.Down();
            
-        if(this.ScorepLiefe ==0){
+        if(this.ScorepLiefe <=0){
             this.life= false;
-           
             this.posX=100;
             this.posY= 300;
-            
-            
         }
         else if(this.ScorepLiefe< 80){
             this.posIz=2;
@@ -173,9 +169,7 @@ public class Boss extends Thread{
      Width = this.Boss.getWidth(null);
      return new Rectangle(this.posX,this.posY,High,Width);
     }
-    public void SetSpeed(int c){
-        this.speed= c;
-    }
+
     private int M=5;
     private int m= 0;
  

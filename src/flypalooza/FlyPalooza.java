@@ -28,12 +28,7 @@ import sun.audio.AudioStream;
 
 
 public final class FlyPalooza extends JFrame implements Runnable{
-    //Pruebas 
-    public static JTextField ip2;
-    public static JTextArea recibir;
-    public static JTextField enviar;
-    public static JButton conectar;
-    public static JButton servidorIni;
+    
     
     //Faces
     public static JLabel firstFace;
@@ -58,6 +53,8 @@ public final class FlyPalooza extends JFrame implements Runnable{
     public static JLabel createMatch;
     public static JLabel tableRankings;
     
+    
+    
     public static JLabel level1;
     public static JLabel level1M;
     
@@ -66,7 +63,7 @@ public final class FlyPalooza extends JFrame implements Runnable{
     
     //Objects
     public static JTextField ip;
-    Cursor cursor = new Cursor(12);
+    public static Cursor cursor = new Cursor(12);
     
     //Images    
     static public ImageIcon background;
@@ -97,8 +94,7 @@ public final class FlyPalooza extends JFrame implements Runnable{
 
     //Constructor of the principal window
     public FlyPalooza() throws InterruptedException{
-        super("--------------------------------------------------------Fly Palooza------------------------------------");
-        
+        super("--------------------------------------------------------Fly Palooza------------------------------------");        
         getIconImage();
         Container container = getContentPane();
         container.setLayout(null);
@@ -146,17 +142,9 @@ public final class FlyPalooza extends JFrame implements Runnable{
         singleButton.setBounds(260, 300, 280, 46);
         singleButton.setVisible(true);        
         singleButton.setCursor(cursor);
-        singleButtonImg = new ImageIcon("Menus/BSinglePlayer.png");
+        singleButtonImg = new ImageIcon("Menus/BMultiPlayer.png");
         singleButton.setIcon(singleButtonImg);
         firstFace.add(singleButton);
-        
-        multiplayerButton = new JLabel();
-        multiplayerButton.setBounds(260, 355, 280, 46);
-        multiplayerButton.setVisible(true);
-        multiplayerButton.setCursor(cursor);
-        multiplayerButtonImg = new ImageIcon("Menus/BMultiPlayer.png");
-        multiplayerButton.setIcon(multiplayerButtonImg);
-        firstFace.add(multiplayerButton);
         
         creditsButton = new JLabel();
         creditsButton.setBounds(260, 410, 280, 46);
@@ -221,6 +209,9 @@ public final class FlyPalooza extends JFrame implements Runnable{
         backgroundCredits = new ImageIcon("Menus/CreditsTexto.png");
         credits.setIcon(backgroundCredits);
         creditsFace.add(credits);
+        
+        
+        
         
     }    
     //Main of the Window

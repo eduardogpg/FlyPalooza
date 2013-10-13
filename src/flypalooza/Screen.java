@@ -4,6 +4,7 @@
  */
 package flypalooza;
 
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,6 +13,7 @@ import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -22,13 +24,11 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-/**
- *
- * @author Eduardo
- */
+
 public class Screen extends JPanel implements ActionListener,KeyListener,MouseListener{
     private Image BackGround;
     private ImageIcon myBackground;
@@ -50,15 +50,20 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     private final Color MyColor=new Color( 14, 60, 180);
 
     private int deadTime = 120;
-    private int TimeCreateSpecial =0 ;
-    private int Horda = 20;
-    private int Level = 0;
+    private int TimeCreateSpecial = 0 ;
+    private int Horda = 23;
+    private int Level = 1;
     private int AuxTimer = 0;
     private int NumSp = 0;
     private int numPlayerFre=0;
     private int TimeCombo= -10;
     private int TimeCreateBoss = 0;
+    private int RanitaGandatora= 0;
+       
     
+    private boolean inGame= false;//It helps to control the time of the Draws
+    private boolean Premio = false;
+     
     
     private boolean Combo= false;
     private boolean timeOut= false;
@@ -67,7 +72,18 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     private boolean loser = false;
     private boolean coperativo = true;
     
-    String Mesage = "You Ready fot Cath "+this.Horda+ " in "+this.deadTime +" seconds ";
+    private boolean NivelDos= true;
+    
+    public static JLabel buttonReturnMainMenu;
+    static public ImageIcon buttonReturnMainMenuImg;
+    
+    String Mesage = "Are you ready for Catch the Flyes in "+this.deadTime +" seconds ";
+    
+    Audio combo= new Audio("Audio/Combo.wav");
+    Audio doubleFlyes = new Audio("Audio/DoubleFlyes.wav");
+    Audio antiGraviti = new Audio("Audio/AntiGravity.wav");
+    Audio superScope = new Audio("Audio/SuperScope.wav");
+    Audio freeze = new Audio("Audio/Freeze.wav");
     
     Clock clock = new Clock();
     Font font;
@@ -75,7 +91,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     
     
     Boss Brutus;
-    //Point MyMouse = MouseInfo.getPointerInfo().getLocation();
+    
     
     Random random = new Random();
     Frog Player ;
@@ -83,8 +99,16 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     Scope MiraPlayerUno;
     Scope MiraPlayerDos;
     
-    public Screen()throws Exception{
-    
+    public Image getIconImage() {
+       Image retValue = Toolkit.getDefaultToolkit().
+             getImage(ClassLoader.getSystemResource("FlyPalooza/icono32.png"));
+       return retValue;
+    }
+    public Screen(boolean Level,int num)throws Exception{
+        Events.ventana.setIconImage(getIconImage());
+        NivelDos= Level;
+        this.Level=num;
+        
         myBackground = new ImageIcon("Imagenes/Escenario.png");
         BackGround = myBackground.getImage();
         this.font = new Font("SansSerif",Font.BOLD,24);   
@@ -99,13 +123,13 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
         this.ListSpecial = new ArrayList();
         this.listClouds= new ArrayList();
         
-        //Funciones 
+        //Functions
         this.MakeFirstPlayer();
         this.MakeSecondPlayer();
         this.MakeCloud();
         this.LoadImgFly();
         this.LoadImgLuci();
-        this.MakeBites(this.Horda,false);
+        
         
             time = new Timer(4,this); 
             time.start();
@@ -113,12 +137,18 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
             setFocusable(true);
             addKeyListener(this);
             addMouseListener(this);
+            
+            if((NivelDos)&&(this.Level==1)){
+                    this.ChangedForDifficult();
+            }else{
+                this.MakeBites(this.Horda,false);
+            }
 
     }        
     
   
     public void MakeBites(int horda,boolean Luciernagas){
-        
+       
         for(int x=0; x<horda;x++){
             int Cx = this.random.nextInt(700)+1;
             int Cy = this.random.nextInt(400)+1;
@@ -132,10 +162,10 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                 this.List_Fly.add(moscas);              
             }
          }
-        this.TimeCreateSpecial = this.random.nextInt(10)+1; //Me ayuda a crear un Item Especial
+        this.TimeCreateSpecial = this.random.nextInt(10)+7; //It helps to create a special item
         if(!Luciernagas)
             this.TimeCreateBoss = this.random.nextInt(20)+1;
-        System.err.println(this.TimeCreateBoss);
+        
       
     }
     
@@ -173,7 +203,8 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     
     private void MakeBoos() throws Exception{
         if(this.Level==1){   
-            System.err.println("Entro para el jefe");
+ 
+            
         int w = this.random.nextInt(600);
             int y= this.random.nextInt(100);
             this.Brutus = new Boss(w,y);
@@ -196,7 +227,6 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     
     private void MakeSecondPlayer(){
         
-        
        this.ListPathP2.add("Imagenes/RanaDos/1b.png"); //0
        this.ListPathP2.add("Imagenes/RanaDos/2b.png"); //1
        this.ListPathP2.add("Imagenes/RanaDos/3b.png"); //2
@@ -211,7 +241,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     public void paint(Graphics g){
      
      super.paint(g);
-     Graphics2D g2 = (Graphics2D)g; //Pasamos G a Graphics 2D
+     Graphics2D g2 = (Graphics2D)g; //We pass g to g2D
      g.drawImage(this.BackGround,0,0, this);
       
      
@@ -233,7 +263,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
      }else{
      
      
-        if(Level!=2)
+        if(!this.Premio)
            g2.drawImage(this.Grass,0,200, null);
         if(this.coperativo){
            g2.drawImage(this.Player.getimage(), this.Player.getX(),this.Player.getY() ,null);
@@ -255,16 +285,17 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                 g2.drawString(this.Mesage,300,80);
            else{
                   if((this.clock.getSecond()==4)&&((this.Level==0)||(this.Level==1)) && this.inGame==false)
-                       g2.drawString("GOOOOOO",240,120);
+                       g2.drawString("<html><h1>GOOOOOOO</h1></html>",240,120);
 
            }
        if(this.Level!=0){
+           
                g2.drawString("Score Player One : "+this.Player.ScoreFrog,80,40);
                g2.drawString("Score Player Two : "+this.PlayerTwo.ScoreFrog,400,40);
 
-               g2.drawString("Timer : "+this.clock.getSecond(),300,80);  
+               g2.drawString("Time : "+this.clock.getSecond(),300,80);  
         }
-        if(booelanBoss)
+        if((booelanBoss)&&(DrawBoos))
             g2.drawImage(this.Brutus.getimage(),this.Brutus.getX(), Brutus.getY(),null);
 
 
@@ -285,6 +316,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
            }
      }
      }
+    private boolean DrawBoos= true;
     public void actionPerformed(ActionEvent e) {
         repaint();
         try {
@@ -306,12 +338,13 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
              Attac.start();
              this.ListSpecial.add(Attac);
              SpecialBoolean= false;
-             TimeCreateSpecial= 0;//Coloco el tiempo para que no se vuelva a crear otro especial en el nivel
+             TimeCreateSpecial= 0;//we place the tima for not create another level
          }
       
       }
     
     int NewTimerforNextHorda=0;
+    
     private boolean NextLevel(){
         if(this.List_Fly.size()==0)
             return true;
@@ -321,69 +354,91 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     
     Audio level2;
     private void ChangedForDifficult() throws Exception{
+        timerCreatMoreFly= timeForM;
         myBackground = new ImageIcon("Imagenes/Escenario2.png");
         BackGround = myBackground.getImage();
-        
+
         level2 = new Audio("Audio/Nivel2.wav");
         level2.play();
         Events.audio4.stop();
         if(this.ListSpecial.size()>0)
             this.ListSpecial.remove(0);
-        this.Horda=20;
+        this.Horda=22;
         this.MakeBites(this.Horda,true);
         
         for(int x=0;x<this.listClouds.size();x++){
             this.listClouds.remove(x);
         }
     }
-    
-    //Cambiar estas variables Arriba
-    private boolean inGame= false;//Me ayuda a poder Controlar los tiempos de Dibujo de las sentencias
-    private boolean Premio = false;
-    private int RanitaGandatora= 0;    
-    
+   boolean Activado= true;
     private void Premiasion() throws Exception{
             Audio price = new Audio("Audio/Credits.wav");
             level2.stop();
             price.play();
             this.Premio= true;
-            myBackground = new ImageIcon("Imagenes/Ganador.png");
-            BackGround = myBackground.getImage();
+            this.clock.Restart();
+            TimerforBack= this.clock.getSecond()+10;
             
-            this.IconPremiasion = new ImageIcon("Imagenes/Podium2.png");
+          myBackground = new ImageIcon("Imagenes/Ganador.png");
+          BackGround = myBackground.getImage();
+          
+          this.IconPremiasion = new ImageIcon("Imagenes/Podium2.png");
             this.Premiasion = this.IconPremiasion.getImage();
         
             if(this.Player.ScoreFrog>this.PlayerTwo.ScoreFrog)
                 this.RanitaGandatora= 1;
              else
                 this.RanitaGandatora= 2;
-       }
+            this.clock.Restart();
+    }
     Audio begin = new Audio("Audio/starPlay.wav");;
     boolean sonBoss=false;
     
+    int timeForM=40;
+    int timerCreatMoreFly= timeForM;
+    int TimerforBack= 0;
+    
+  
+    boolean Lala = false;
     private void Sinapsis() throws Exception{
+        
+        if((this.Premio)&&(TimerforBack==this.clock.getSecond())){
+            System.exit(0);
+        }
+        if((this.loser)&&(TimerforBack==this.clock.getSecond())){
+            System.exit(0);
+        }
+        
+        if((this.timerCreatMoreFly==this.clock.getSecond())&&(this.clock.getSecond()<120)){
+            this.timerCreatMoreFly+=5;
+            if(this.Level==1)
+                this.MakeBites(10,false);
+            else
+                this.MakeBites(10,true);
+        }
         if((this.TimeCreateBoss==this.clock.getSecond())&&(booelanBoss==false)){
             this.MakeBoos();
             begin.stop();
-            System.err.println("Entro a terminar la musica");
+            TimeCreateBoss=0;
         }
+
         
-        if(((this.Level==0)||(this.Level==1))&&(this.clock.getSecond()==5) &&(inGame==false)){
+        if(((this.Level==0)||(this.Level==1)||(this.Level==2))&&(this.clock.getSecond()==5) &&(inGame==false)){
             begin.play();
             this.clock.Restart();
-             this.Level++;
-                if(this.Level==1){
-                   MiraPlayerUno.start();
-                   MiraPlayerDos.start();
-                }
+            this.Level++;
+             
+             if(Activado){
+                MiraPlayerUno.start();
+                MiraPlayerDos.start();
+                Activado= false;
+             }
                 if(Level==2)
-                    this.ChangedForDifficult();
+                    if(!this.NivelDos)
+                        this.ChangedForDifficult();
              inGame= true;
         }
         
-       if((TimeCombo == this.clock.getSecond())&& (this.booelanBoss))
-           this.booelanBoss= false;
-      
        
        if((this.NextLevel())&&(this.inGame)){      
            this.clock.Restart();
@@ -395,15 +450,15 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
            if(this.clock.getSecond()>this.deadTime)
            {this.StopAll();
            this.timeOut= true;
-           this.Mesage="Perdieron los dos";
+           this.Mesage="You Lose";
            inGame= false;
            loser= true;
            Level=0;
            }
-       }//Comprobamos si hay algun Especial
+       }//We comprove if there are another special
        if(SpecialPush){
            if(NumSp==1){
-                      if(this.clock.getSecond()==this.AuxTimer){//Reanudamos la velocidad que anterior mente le quitamos
+                      if(this.clock.getSecond()==this.AuxTimer){//we pplace the speed that before we take out
                         for(int x=0;x<this.List_Fly.size();x++){
                              Fly littles_fly = (Fly)List_Fly.get(x); 
                              littles_fly.SetSpeed(40);
@@ -412,7 +467,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                           if(this.AuxTimer<this.clock.getSecond())
                               this.SpecialPush= false;
                       }
-           }else if(NumSp==3){//Para quitarle velociada al contrincante
+           }else if(NumSp==3){//To take off the speed to the another player
                if(this.numPlayerFre==1)
                     this.SleepPlayer(MiraPlayerDos);
                else
@@ -425,16 +480,22 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                    this.bigerScope(MiraPlayerDos);
             }
 
-       }//Salimos de los especiales 
-       
-     }
+       }//We go out to the specials
+             
+       if((this.TimeCombo==this.clock.getSecond())&&(this.booelanBoss)){
+           this.booelanBoss= false;
+           this.DestroBrutus();
+       }
+     repaint();
+    }
+    private boolean NoBite= false;
     
     private void bigerScope(Scope myMira){
               if(this.clock.getSecond()< this.AuxTimer)
                   myMira.ChangeforBigImg(2);
                else{
                        myMira.ChangeforBigImg(0);
-                       SpecialPush=false; this.NumSp= 100;//Coloco aqui el false y no en Sinapsi por La facilidad de manejo
+                       SpecialPush=false; this.NumSp= 100;//We place false here and nt in sinapsis
                    }
     }
     
@@ -493,25 +554,28 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
               this.MiraPlayerDos.Up();
           }else if(Key==KeyEvent.VK_S){
               this.MiraPlayerDos.Down();
-              
-          }else if(Key==KeyEvent.VK_SPACE){
-             this.CollisionDetector(this.MiraPlayerUno,this.Player);
-             if(!Premio)
-                this.Player.OpenMouth();
-             
-          }else if(Key== KeyEvent.VK_G){
-              if(!Premio )
-              this.PlayerTwo.OpenMouth();
-              this.CollisionDetector(this.MiraPlayerDos,this.PlayerTwo);
-          
+          }else if(!NoBite){   
+                 if(Key==KeyEvent.VK_SPACE){
+
+                          this.CollisionDetector(this.MiraPlayerUno,this.Player);
+                         if(!Premio)
+                            this.Player.OpenMouth();
+
+                }else if(Key== KeyEvent.VK_G){
+
+                      if(!Premio )
+                      this.PlayerTwo.OpenMouth();
+                      this.CollisionDetector(this.MiraPlayerDos,this.PlayerTwo);
+                   }
           }
     }
     
+
+    
     private void CollisionDetector(Scope mira, Frog littleFrog){
-             
         Rectangle p1 = mira.Rectangulo();
 
-        for(int x=0;x<this.List_Fly.size();x++){//Solo Moscas y Moscas de noche
+        for(int x=0;x<this.List_Fly.size();x++){//Just flyies
              Fly littles_fly = (Fly)List_Fly.get(x); 
              Rectangle RectFly = littles_fly.Rectangulo();
              if(RectFly.intersects(p1)){
@@ -520,7 +584,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                
              }
         }
-        if(this.ListSpecial.size()>0){//Especiales
+        if(this.ListSpecial.size()>0){//Specials
             Special Atta = (Special)this.ListSpecial.get(0);
             Rectangle RectSpe = Atta.Rectangulo();
             if(RectSpe.intersects(p1)){
@@ -530,43 +594,48 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                 
                } 
         }
+        
         if(this.booelanBoss){
-            Rectangle RectBoss = this.Brutus.Rectangulo();
-             if((this.Brutus.getLife()==false)){
-                            Combo= true;
-                            littleFrog.ScoreFrog+=50;
-                            TimeCombo = this.clock.getSecond()+1;
-                           
-                 }else{
-                     if(RectBoss.intersects(p1)){
-                        this.Brutus.ScorepLiefe-=20;
-                 }
-             }
-                        
+            Rectangle recBoos = this.Brutus.Rectangulo();
+            if((p1.intersects(recBoos))&&(!NoBite)){
+                this.Brutus.ScorepLiefe-=10;
+                
+                if(this.Brutus.ScorepLiefe==0){
+                     littleFrog.ScoreFrog+=5;
+                     this.Combo= true;
+                     this.TimeCombo= this.clock.getSecond()+1;
+                     NoBite= true;
+                }
+            }
         }
-            
+       
     }
+    
     
     private void TiggeredSpecial(int num,int player){
          this.SpecialPush= true;
           
-       if(num == 0){//Moscas al Doble
+       if(num == 0){//Double Flyies
+           doubleFlyes.play();
            if(this.Level==1)
-                this.MakeBites(this.List_Fly.size()*2,false);
+               this.MakeBites(this.List_Fly.size()*2,false);
            else
                this.MakeBites(this.List_Fly.size()*2,true);
            
            AuxTimer = this.clock.getSecond()+3;
        
-       }else if(num==1){//Congelar Moscas
+       }else if(num==1){//Freeze Flyies
+           antiGraviti.play();
            this.ChangeSpeedbites();
            AuxTimer = this.clock.getSecond()+3;
         
-       }else if(num==2){ //Mira más grande
+       }else if(num==2){ //Super  Scope
+           superScope.play();
           AuxTimer = this.clock.getSecond()+5;
           this.numPlayerFre = player;
           
-        }else if(num==3){//Compañero Congelado
+        }else if(num==3){//Freeze partner
+            freeze.play();
             AuxTimer = this.clock.getSecond()+5;
            this.numPlayerFre = player;
         }
@@ -580,18 +649,23 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
        
     }
     
-    public void mouseClicked(MouseEvent e) {//Se llama cuando se oprime y se suelta un botón en el mouse.
+    private void DestroBrutus(){
+        System.err.print("Mensaje");
+        combo.play();
+        NoBite= false;
+    }
+    public void mouseClicked(MouseEvent e) {//It calls when the mouse is clicked
     }
     
-    public void mousePressed(MouseEvent e) { //Cuando se oprime el boton del mouse.
+    public void mousePressed(MouseEvent e) { //It calls when the mouse is pressed
     }
     
-    public void mouseReleased(MouseEvent e) {//Cuando se suelta el boton del mouse
+    public void mouseReleased(MouseEvent e) {//It calls when the button of the mouse is released
     }
     
-    public void mouseEntered(MouseEvent e) { // Ocurre cuando el cursor entra dentro de los límites del componente.
+    public void mouseEntered(MouseEvent e) { //It calls when the cursor of the mouse is entered 
     }
     
-    public void mouseExited(MouseEvent e) {
+    public void mouseExited(MouseEvent e) {//It calls when the cursor of the mouse is exited
     }
 }
