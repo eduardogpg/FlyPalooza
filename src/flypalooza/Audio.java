@@ -4,16 +4,7 @@
  */
 package flypalooza;
 
-import java.applet.AudioClip;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
-import sun.audio.AudioStream;
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import java.applet.AudioClip;
 import javax.swing.JApplet;
 import java.io.File;

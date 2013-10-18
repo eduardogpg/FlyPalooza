@@ -1,30 +1,22 @@
 package flypalooza;
 
-import java.awt.Color;
+
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+
 import javax.swing.JTextField;
 
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
+
 
 
 public final class FlyPalooza extends JFrame implements Runnable{
