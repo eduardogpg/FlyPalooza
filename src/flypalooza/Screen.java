@@ -58,11 +58,11 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     private int numPlayerFre=0;
     private int TimeCombo= -10;
     private int TimeCreateBoss = 0;
-    private int RanitaGandatora= 0;
+    private int winning_frog= 0;
        
     
     private boolean inGame= false;//It helps to control the time of the Draws
-    private boolean Premio = false;
+    private boolean reward = false;
      
     
     private boolean Combo= false;
@@ -72,7 +72,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     private boolean loser = false;
     private boolean coperativo = true;
     
-    private boolean NivelDos= true;
+    private boolean LeveTwo= true;
     
     public static JLabel buttonReturnMainMenu;
     static public ImageIcon buttonReturnMainMenuImg;
@@ -106,7 +106,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     }
     public Screen(boolean Level,int num)throws Exception{
         Events.ventana.setIconImage(getIconImage());
-        NivelDos= Level;
+        LeveTwo= Level;
         this.Level=num;
         
         myBackground = new ImageIcon("Imagenes/Escenario.png");
@@ -138,7 +138,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
             addKeyListener(this);
             addMouseListener(this);
             
-            if((NivelDos)&&(this.Level==1)){
+            if((LeveTwo)&&(this.Level==1)){
                     this.ChangedForDifficult();
             }else{
                 this.MakeBites(this.Horda,false);
@@ -248,9 +248,9 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
      g2.setFont(font);
      g2.setColor(this.MyColor);
      
-     if(Premio){
+     if(reward){
          g2.drawImage(this.Premiasion,100,350, null);
-            if(this.RanitaGandatora==1){
+            if(this.winning_frog==1){
                 g2.drawImage(this.Player.getimage(), 300,220 ,null); 
                 g2.drawImage(this.PlayerTwo.getimage(), 100,300 ,null);
                 
@@ -263,7 +263,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
      }else{
      
      
-        if(!this.Premio)
+        if(!this.reward)
            g2.drawImage(this.Grass,0,200, null);
         if(this.coperativo){
            g2.drawImage(this.Player.getimage(), this.Player.getX(),this.Player.getY() ,null);
@@ -371,11 +371,11 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
         }
     }
    boolean Activado= true;
-    private void Premiasion() throws Exception{
+    private void awards() throws Exception{
             Audio price = new Audio("Audio/Credits.wav");
             level2.stop();
             price.play();
-            this.Premio= true;
+            this.reward= true;
             this.clock.Restart();
             TimerforBack= this.clock.getSecond()+10;
             
@@ -386,9 +386,9 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
             this.Premiasion = this.IconPremiasion.getImage();
         
             if(this.Player.ScoreFrog>this.PlayerTwo.ScoreFrog)
-                this.RanitaGandatora= 1;
+                this.winning_frog= 1;
              else
-                this.RanitaGandatora= 2;
+                this.winning_frog= 2;
             this.clock.Restart();
     }
     Audio begin = new Audio("Audio/starPlay.wav");;
@@ -402,7 +402,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
     boolean Lala = false;
     private void Sinapsis() throws Exception{
         
-        if((this.Premio)&&(TimerforBack==this.clock.getSecond())){
+        if((this.reward)&&(TimerforBack==this.clock.getSecond())){
             System.exit(0);
         }
         if((this.loser)&&(TimerforBack==this.clock.getSecond())){
@@ -434,7 +434,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                 Activado= false;
              }
                 if(Level==2)
-                    if(!this.NivelDos)
+                    if(!this.LeveTwo)
                         this.ChangedForDifficult();
              inGame= true;
         }
@@ -445,7 +445,7 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
            this.timeOut= true;
            inGame= false;
            if(this.Level==2)
-               this.Premiasion();
+               this.awards();
        }else{
            if(this.clock.getSecond()>this.deadTime)
            {this.StopAll();
@@ -558,12 +558,12 @@ public class Screen extends JPanel implements ActionListener,KeyListener,MouseLi
                  if(Key==KeyEvent.VK_SPACE){
 
                           this.CollisionDetector(this.MiraPlayerUno,this.Player);
-                         if(!Premio)
+                         if(!reward)
                             this.Player.OpenMouth();
 
                 }else if(Key== KeyEvent.VK_G){
 
-                      if(!Premio )
+                      if(!reward )
                       this.PlayerTwo.OpenMouth();
                       this.CollisionDetector(this.MiraPlayerDos,this.PlayerTwo);
                    }
